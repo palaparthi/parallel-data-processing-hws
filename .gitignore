@@ -1,0 +1,21 @@
+# Intellij files
+.idea/
+*.iml
+
+# Log file
+.DS_Store
+
+# Temp files
+*.swp
+
+# Class files
+*.class
+
+# Maven files
+target/
+
+# Input and Output directories
+input/
+output/
+edges.csv
+output_final/
