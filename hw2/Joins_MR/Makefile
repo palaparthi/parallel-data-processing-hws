@@ -3,9 +3,9 @@
 # Customize these paths for your environment.
 # -----------------------------------------------------------
 hadoop.root=/Users/sreepalaparthi/hadoop-2.9.1
-jar.name=hw1-1.0.jar
+jar.name=hw2-mr-1.0.jar
 jar.path=target/${jar.name}
-job.name=twitter.TwitterFollower
+job.name=twitter.RepJoin
 local.input=input
 local.output=output
 # Pseudo-Cluster Execution
@@ -15,10 +15,11 @@ hdfs.output=output
 # AWS EMR Execution
 aws.emr.release=emr-5.17.0
 aws.region=us-east-1
-aws.bucket.name=cs6240-homework1
+aws.bucket.name=cs6240-homework2-mr
 aws.subnet.id=subnet-ae64af90
 aws.input=input
 aws.output=output
+aws.file=input/edges.csv
 aws.log.dir=log
 aws.num.nodes=5
 aws.instance.type=m4.large
@@ -110,11 +111,11 @@ upload-app-aws:
 # Main EMR launch.
 aws: jar upload-app-aws delete-output-aws
 	aws emr create-cluster \
-		--name "TwitterFollower MR Cluster" \
+		--name "TwitterFollower RepJoin Triangle MR Cluster s10" \
 		--release-label ${aws.emr.release} \
 		--instance-groups '[{"InstanceCount":${aws.num.nodes},"InstanceGroupType":"CORE","InstanceType":"${aws.instance.type}"},{"InstanceCount":1,"InstanceGroupType":"MASTER","InstanceType":"${aws.instance.type}"}]' \
 	    --applications Name=Hadoop \
-	    --steps '[{"Args":["${job.name}","s3://${aws.bucket.name}/${aws.input}","s3://${aws.bucket.name}/${aws.output}"],"Type":"CUSTOM_JAR","Jar":"s3://${aws.bucket.name}/${jar.name}","ActionOnFailure":"TERMINATE_CLUSTER","Name":"Custom JAR"}]' \
+	    --steps '[{"Args":["${job.name}","s3://${aws.bucket.name}/${aws.input}","s3://${aws.bucket.name}/${aws.output}","s3://${aws.bucket.name}/${aws.file}"],"Type":"CUSTOM_JAR","Jar":"s3://${aws.bucket.name}/${jar.name}","ActionOnFailure":"TERMINATE_CLUSTER","Name":"Custom JAR"}]' \
 		--log-uri s3://${aws.bucket.name}/${aws.log.dir} \
 		--use-default-roles \
 		--enable-debugging \

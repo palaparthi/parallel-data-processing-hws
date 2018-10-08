@@ -30,7 +30,7 @@ public class RSJoin extends Configured implements Tool {
         private final Text outValue = new Text();
         private final Text outKey2 = new Text();
         private final Text outValue2 = new Text();
-        private final int MAX = 10000;
+        private final int MAX = 5000;
 
         @Override
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
@@ -68,9 +68,9 @@ public class RSJoin extends Configured implements Tool {
             if (!fromList.isEmpty() && !toList.isEmpty()) {
                 for (Text F : fromList) {
                     for (Text T : toList) {
-                        if (Integer.parseInt(F.toString()) != Integer.parseInt(T.toString())) {
+                        //if (Integer.parseInt(F.toString()) != Integer.parseInt(T.toString())) {
                             context.write(F, T);
-                        }
+                        //}
                     }
                 }
             }
@@ -86,10 +86,10 @@ public class RSJoin extends Configured implements Tool {
         jobConf.set("mapreduce.output.textoutputformat.separator", "\t");
         // Delete output directory, only to ease local development; will not work on AWS.
         // ===========
-        final FileSystem fileSystem = FileSystem.get(conf);
-        if (fileSystem.exists(new Path(args[1]))) {
-            fileSystem.delete(new Path(args[1]), true);
-        }
+//        final FileSystem fileSystem = FileSystem.get(conf);
+//        if (fileSystem.exists(new Path(args[1]))) {
+//            fileSystem.delete(new Path(args[1]), true);
+//        }
         // ================
         job.setMapperClass(RSMapper.class);
         // Set reducer and combiner as same as we are just aggregating the values

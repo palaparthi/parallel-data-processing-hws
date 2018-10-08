@@ -7,9 +7,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.mapreduce.Mapper;
-import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.*;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.MultipleInputs;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -20,11 +18,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
+
 
 
 public class RSJoinTriangle extends Configured implements Tool {
@@ -33,9 +27,13 @@ public class RSJoinTriangle extends Configured implements Tool {
     public static class Path2 extends Mapper<Object, Text, Text, Text> {
         private final Text outKey = new Text();
         private final Text outValue = new Text();
-        private final Text outKey2 = new Text();
-        private final Text outValue2 = new Text();
-        private final int MAX = 10000;
+        private final int MAX = 1000;
+
+        @Override
+        public void setup(Context c) throws IOException, InterruptedException {
+
+
+        }
 
         @Override
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
@@ -51,9 +49,7 @@ public class RSJoinTriangle extends Configured implements Tool {
     public static class Edges extends Mapper<Object, Text, Text, Text> {
         private final Text outKey = new Text();
         private final Text outValue = new Text();
-        private final Text outKey2 = new Text();
-        private final Text outValue2 = new Text();
-        private final int MAX = 10000;
+        private final int MAX = 1000;
 
         @Override
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
@@ -67,10 +63,6 @@ public class RSJoinTriangle extends Configured implements Tool {
     }
 
     public static class TriangleReducer extends Reducer<Text, Text, Text, Text> {
-        private final IntWritable result = new IntWritable();
-        private List<Text> fromList = new ArrayList();
-        private List<Text> toList = new ArrayList();
-
 
         @Override
         public void reduce(final Text key, final Iterable<Text> values, final Context context) throws IOException, InterruptedException {
@@ -88,6 +80,7 @@ public class RSJoinTriangle extends Configured implements Tool {
 
             if (!key.toString().isEmpty() && (isE && isP)) {
                 context.write(key, new Text("1"));
+                context.getCounter(TriangleCount.NUMBER_OF_TRIANGLES).increment(1);
             }
 
         }
@@ -118,7 +111,16 @@ public class RSJoinTriangle extends Configured implements Tool {
         job.setOutputValueClass(Text.class);
         //FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[2]));
-        return job.waitForCompletion(true) ? 0 : 1;
+        job.waitForCompletion(true);
+        Counters cn = job.getCounters();
+        Counter counter = cn.findCounter(TriangleCount.NUMBER_OF_TRIANGLES);
+        Long triangleCount = counter.getValue() / 3;
+        logger.info("TRIANGLE COUNT " + triangleCount);
+        return 0;
+    }
+
+    enum TriangleCount {
+        NUMBER_OF_TRIANGLES
     }
 
     public static void main(final String[] args) {

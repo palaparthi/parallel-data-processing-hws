@@ -32,11 +32,11 @@ public class MaxFilter extends Configured implements Tool {
         @Override
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
             final String[] tokens = value.toString().split(",");
-            //if(Integer.parseInt(tokens[0]) <= MAX && Integer.parseInt(tokens[1]) <= MAX) {
+            if(Integer.parseInt(tokens[0]) <= MAX && Integer.parseInt(tokens[1]) <= MAX) {
                 follower.set(tokens[0]);
                 followee.set(tokens[1]);
                 context.write(follower, followee);
-            //}
+            }
         }
     }
 
