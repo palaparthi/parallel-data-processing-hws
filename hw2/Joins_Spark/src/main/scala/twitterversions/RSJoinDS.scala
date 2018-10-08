@@ -41,7 +41,9 @@ object RSJoinDS {
     val ds4 = ds1.select($"_c0".alias("k2"), $"_c1".alias("v2"))
     //case class JoinOutput(_c0: Int, _c1:Int)
 
+    // Join on 2nd column to find path2 1,2 and 2,3 => 1,3
     val path2DS = ds3.as("S1").join(ds4.as("S2")).where($"S1.v1" === $"S2.k2")
+    // find triangle with original dataset 1,3 and 3,1 => 1 triangle formed
     val triangle = path2DS.as("S1").join(ds3.as("S2")).where($"S1.v2" === $"S2.k1" and $"S1.k1" === $"S2.v1").count()
 
 

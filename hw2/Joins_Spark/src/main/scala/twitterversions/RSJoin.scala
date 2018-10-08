@@ -47,6 +47,7 @@ object RSJoin {
     val original = splitFile2.collect
     for (p2 <- paths2) {
       for (o <- original) {
+        // check if 1,2 == 2,1
         if (p2._2 == o._1 && p2._1 == o._2) {
           count += 1
         }
