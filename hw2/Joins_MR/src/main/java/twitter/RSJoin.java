@@ -36,6 +36,7 @@ public class RSJoin extends Configured implements Tool {
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
             final String[] tokens = value.toString().split(",");
             if (Integer.parseInt(tokens[0]) <= MAX && Integer.parseInt(tokens[1]) <= MAX) {
+                // append F and T to differenciate b/w follower and followee
                 outKey.set(tokens[1]);
                 outValue.set("F" + tokens[0]);
                 outKey2.set(tokens[0]);

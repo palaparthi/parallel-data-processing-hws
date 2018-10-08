@@ -69,6 +69,7 @@ public class RSJoinTriangle extends Configured implements Tool {
             boolean isP = false;
             boolean isE = false;
             for (Text t : values) {
+                // if values doesn't contain both E and P then don't emit
                 if (!isE || !isP) {
                     if (t.toString().equals("P")) {
                         isP = true;

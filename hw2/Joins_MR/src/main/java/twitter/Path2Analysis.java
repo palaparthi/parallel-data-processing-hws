@@ -54,6 +54,7 @@ public class Path2Analysis extends Configured implements Tool {
         public void cleanup(Context context) throws IOException, InterruptedException {
             Iterator<Map.Entry<Integer, Integer>> iterator = followedCount.entrySet().iterator();
             while (iterator.hasNext()) {
+                // check two hashmaps and emit
                 Map.Entry<Integer, Integer> next = iterator.next();
                 if (followingCount.containsKey(next.getKey())) {
                     String val = next.getValue().toString() + "," + followingCount.get(next.getKey()).toString();
@@ -80,6 +81,7 @@ public class Path2Analysis extends Configured implements Tool {
             int noOfFollowers = 0;
             int noOfFollowees = 0;
             for (Text val : values) {
+                // find cardinality for each key
                 String[] substrs = val.toString().split(",");
                 noOfFollowees += Integer.parseInt(substrs[0]);
                 noOfFollowers += Integer.parseInt(substrs[1]);

@@ -41,7 +41,7 @@ public class Path2AnalysisFinal extends Configured implements Tool {
 
         @Override
         public void cleanup(Context context) throws IOException, InterruptedException {
-
+            // emit entire cardinality
             context.write(one, new LongWritable(sum));
         }
     }
