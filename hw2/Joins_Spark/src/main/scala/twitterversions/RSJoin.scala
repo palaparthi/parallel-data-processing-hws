@@ -6,7 +6,7 @@ import org.apache.spark.sql.SparkSession
 
 object RSJoin {
   def main(args: Array[String]): Unit = {
-    val MAX = 10000
+    val MAX = 1000
     val logger: org.apache.log4j.Logger = LogManager.getRootLogger
     if (args.length != 2) {
       logger.error("Usage:\nwc.TwitterFollowerMain <input dir> <output dir>")
@@ -49,6 +49,7 @@ object RSJoin {
       for (o <- original) {
         // check if 1,2 == 2,1
         if (p2._2 == o._1 && p2._1 == o._2) {
+          logger.info("valll "+ p2._2 +" " + p2._1)
           count += 1
         }
       }
