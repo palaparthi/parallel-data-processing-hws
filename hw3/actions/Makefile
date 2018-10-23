@@ -2,12 +2,12 @@
 
 # Customize these paths for your environment.
 # -----------------------------------------------------------
-spark.root=/home/joe/tools/spark/spark-2.3.1-bin-without-hadoop
+spark.root=/home/sreepalaparthi/tools/spark/spark-2.3.1-bin-without-hadoop
 hadoop.root=/Users/sreepalaparthi/hadoop-2.9.1
-app.name=Twitter RSJoin
-jar.name=hw2-1.0.jar
-maven.jar.name=hw2-spark-1.0.jar
-job.name=twitterversions.RSJoin
+app.name=DanglingDF
+jar.name=hw3-Actions-1.0.jar
+maven.jar.name=hw3-Actions-1.0.jar
+job.name=graph.DanglingDF
 local.master=local[4]
 local.input=input
 local.output=output
@@ -17,7 +17,7 @@ hdfs.input=input
 hdfs.output=output
 # AWS EMR Execution
 aws.emr.release=emr-5.17.0
-aws.bucket.name=cs6240-homework2-mr
+aws.bucket.name=cs6240-homework3-mr
 aws.input=input
 aws.output=output
 aws.subnet.id=subnet-ae64af90
@@ -37,7 +37,7 @@ clean-local-output:
 
 # Runs standalone
 local: jar clean-local-output
-	spark-submit --class ${job.name} --master ${local.master} --name "${app.name}" ${jar.name} ${local.input} ${local.output}
+	spark-submit --class ${job.name} --master ${local.master} --name "${app.name}" ${jar.name}
 
 # Start HDFS
 start-hdfs:
