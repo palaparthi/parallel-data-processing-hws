@@ -37,25 +37,30 @@ public class ShortestPath extends Configured implements Tool {
             final String[] tokens = value.toString().split("\\s+");
             int infinity = Integer.MAX_VALUE;
             int distance = infinity;
-            String from = tokens[0];
+            String fromVertex = tokens[0];
             String adjacencyList = tokens[1];
 
-            if (tokens.length == 2) {
-                if (from.equals(source)) {
-                    distance = 0;
-                } else {
-                    distance = infinity;
-                }
-            } else {
+            if (tokens.length != 2) {
                 // reducer output
                 distance = Integer.parseInt(tokens[2]);
+            } else {
+                // initial run
+                if (fromVertex.equals(source)) {
+                    distance = 0;
+                }
             }
 
             // Pass the graph structure
             Text outKey = new Text(tokens[0]);
-            Text outValue = new Text(String.join(" ", adjacencyList, String.valueOf(distance)));
+            Text outValue;
+            if (distance != infinity) {
+                outValue = new Text(String.join(" ", adjacencyList, String.valueOf(distance), "V"));
+            } else {
+                outValue = new Text(String.join(" ", adjacencyList, String.valueOf(distance)));
+            }
             context.write(outKey, outValue);
 
+            // visiting the neighbors
             if (!adjacencyList.equals("null")) {
                 String[] neighbors = adjacencyList.split(",");
                 for (String n : neighbors) {
@@ -83,10 +88,18 @@ public class ShortestPath extends Configured implements Tool {
 
             for (Text value : values) {
                 final String[] tokens = value.toString().split("\\s+");
-                if (tokens.length == 2) {
+                if (tokens.length == 3) {
+                    // already visited
+                    Text outKey = new Text(node);
+                    Text outValue = new Text(String.join(" ", tokens[0], tokens[1], tokens[2]));
+                    context.write(outKey, outValue);
+                    return;
+                } else if (tokens.length == 2) {
+                    // if an adjacency list
                     adjacencyList = tokens[0];
                     originalDistance = Integer.parseInt(tokens[1]);
                 } else {
+                    // if distance
                     int dist = Integer.parseInt(tokens[0]);
                     if (dist < dMin) {
                         dMin = dist;
@@ -109,11 +122,11 @@ public class ShortestPath extends Configured implements Tool {
     @Override
     public int run(final String[] args) throws Exception {
         final Configuration conf = getConf();
-        conf.set("SOURCE", "1");
+        conf.set("SOURCE", "10001");
         int n = 1;
         int retcode = 0;
         Long infinityCount = 0l;
-        while (infinityCount != -1 ) {
+        while (n < 13) {
             final Job job = Job.getInstance(conf, "Graph Diameter");
             job.setJarByClass(ShortestPath.class);
             final Configuration jobConf = job.getConfiguration();
@@ -149,9 +162,9 @@ public class ShortestPath extends Configured implements Tool {
             Counters cn = job.getCounters();
             Counter counter = cn.findCounter(GraphDiameter.NUMBER_OF_INFINITY_DISTANCES);
             //if (infinityCount == counter.getValue()){
-            if (counter.getValue() == 0){
+            if (counter.getValue() == 0) {
                 infinityCount = -1l;
-            } else{
+            } else {
                 infinityCount = counter.getValue();
             }
             logger.info("Cnt Inf Count" + infinityCount);

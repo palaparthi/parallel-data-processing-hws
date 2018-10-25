@@ -19,3 +19,4 @@ input/
 output/
 edges.csv
 output_final/
+part-r-*

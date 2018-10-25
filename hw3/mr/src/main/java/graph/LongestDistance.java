@@ -29,6 +29,7 @@ public class LongestDistance extends Configured implements Tool {
         public void map(final Object key, final Text value, final Context context) throws IOException, InterruptedException {
 
             final String[] tokens = value.toString().split("\\s+");
+            // key = 1 because we want to send everything to the same reducer to calculate the longest shortest path
             context.write(new Text("1"), new Text(tokens[2]));
 
         }

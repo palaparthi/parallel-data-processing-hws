@@ -42,6 +42,7 @@ object Dangling {
     }
     logger.info("Final Delta" + delta)
     val sorted = pr.sortBy(_._1)
-    sorted.collect().foreach(println)
+    //sorted.collect().foreach(println)
+
   }
 }
