@@ -34,6 +34,7 @@ public class KMeansMR extends Configured implements Tool {
             if (cache != null && cache.length > 0) {
                 for (int j = 0; j < cache.length; j++) {
                     final Configuration conf = context.getConfiguration();
+                    // read cache file
                     FileSystem fileSystem = FileSystem.get(cache[j], conf);
                     Path path = new Path(cache[j].toString());
                     BufferedReader bf = null;
@@ -64,6 +65,7 @@ public class KMeansMR extends Configured implements Tool {
             Long minDist = Math.abs(closestCenter - val);
 
             for (int i = 0; i < centroids.size(); i++) {
+                // find closest center
                 if (Math.abs(centroids.get(i) - val) < minDist) {
                     closestCenter = centroids.get(i);
                     minDist = Math.abs(closestCenter - val);
@@ -84,14 +86,16 @@ public class KMeansMR extends Configured implements Tool {
             Long centroid = Long.parseLong(key.toString());
 
             for (Text value : values) {
+                // update sum and SSE
                 sum += Long.parseLong(value.toString());
                 SSE += ((centroid - Long.parseLong(value.toString())) * (centroid - Long.parseLong(value.toString())));
                 n += 1;
             }
-            //logger.info("SSE Value " + SSE);
-            context.getCounter(KMeans.SSE).increment(SSE);
 
-            newCentroid.set(new Text(String.valueOf(sum / n)));
+
+            context.getCounter(KMeans.SSE).increment(SSE);
+            // set new centroid. depending on values
+            newCentroid.set(new Text(String.valueOf(sum/n)));
 
             context.write(newCentroid, new Text(String.valueOf(n)));
         }
@@ -123,6 +127,7 @@ public class KMeansMR extends Configured implements Tool {
             //job.addCacheFile(new Path(args[2]).toUri());
             RemoteIterator<LocatedFileStatus> remoteIterator;
 
+            // create output directories for every run
             if (i == 0) {
                 centroidPath = new Path(args[1]);
                 fileSystem = FileSystem.get(centroidPath.toUri(), conf);
@@ -146,7 +151,6 @@ public class KMeansMR extends Configured implements Tool {
 
             Counters cn = job.getCounters();
             Counter counter = cn.findCounter(KMeans.SSE);
-
             logger.info("SSE value " + counter.getValue());
             i += 1;
         }
